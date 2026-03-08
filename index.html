@@ -2,61 +2,75 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>禮包碼工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>禮包碼批量提交工具</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f7f9; display: flex; justify-content: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; background-color: #f4f7f9; display: flex; justify-content: center; }
         .box { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 180px; margin: 10px 0; padding: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: monospace; }
-        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .footer { font-size: 12px; color: #888; margin-top: 10px; text-align: center; }
+        h3 { margin-top: 0; color: #333; text-align: center; }
+        textarea { width: 100%; height: 200px; margin: 15px 0; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-family: monospace; font-size: 14px; resize: none; }
+        textarea:focus { border-color: #007bff; outline: none; }
+        button { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
+        button:hover { background-color: #218838; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .footer { font-size: 12px; color: #888; margin-top: 15px; text-align: center; line-height: 1.5; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h3>禮包碼保存紀錄</h3>
-    <textarea id="codes" placeholder="輸入禮包碼，一行一個..."></textarea>
-    <button onclick="submit()">提交並更新本地紀錄</button>
-    <p class="footer">※ 紀錄會保存在此瀏覽器中，不會公開給他人。</p>
+    <h3>禮包碼批量提交</h3>
+    <textarea id="codes" placeholder="請輸入禮包碼，一行一個..."></textarea>
+    <button id="submitBtn" onclick="submitCodes()">提交並儲存</button>
+    <p class="footer">※ 紀錄自動儲存在瀏覽器。<br>※ 提交後會於背景進行請求，不需跳轉頁面。</p>
 </div>
 
 <script>
     const STORAGE_KEY = 'saved_gift_codes';
+    const btn = document.getElementById('submitBtn');
 
-    window.onload = function() {
-        const savedCodes = localStorage.getItem(STORAGE_KEY);
-        if (savedCodes) {
-            document.getElementById('codes').value = savedCodes;
-        }
+    // 頁面載入時讀取紀錄
+    window.onload = () => {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) document.getElementById('codes').value = saved;
     };
 
-    async function submit() {
+    async function submitCodes() {
         const textarea = document.getElementById('codes');
-        const text = textarea.value;
+        const text = textarea.value.trim();
         
-        localStorage.setItem(STORAGE_KEY, text);
-        
-        const lines = text.split('\n').map(s => s.trim()).filter(s => s !== "");
-        if (lines.length === 0) return alert("請輸入禮包碼");
+        if (!text) return alert("請輸入禮包碼");
 
+        // 儲存紀錄
+        localStorage.setItem(STORAGE_KEY, text);
+
+        // 處理拼接
+        const lines = text.split('\n').map(s => s.trim()).filter(s => s !== "");
         const joined = lines.join('@==');
         const url = `http://47.96.230.2:9997/qqyxNew/addDHM?dhm=${encodeURIComponent(joined)}`;
-        
-        // --- 改用背景發送 ---
+
+        // 更新按鈕狀態
+        btn.disabled = true;
+        btn.innerText = "提交中...";
+
         try {
-            // 使用 no-cors 進行盲發，這樣網頁不會跳轉
-            await fetch(url, { mode: 'no-cors' });
+            // 背景發送請求
+            const response = await fetch(url);
             
-            // 給使用者一點視覺回饋，因為沒跳轉的話會感覺「沒反應」
-            alert("提交成功！請求已在背景發送。");
+            if (response.ok) {
+                alert("✅ 提交成功！");
+            } else {
+                alert("⚠️ 伺服器回應錯誤狀態：" + response.status);
+            }
         } catch (error) {
-            // 如果失敗，退而求其次，改用開新視窗
-            console.error("背景發送失敗，改用開視窗模式:", error);
-            window.open(url, '_blank');
+            console.error("發送失敗:", error);
+            alert("❌ 發送失敗，可能是網路連線問題。");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "提交並儲存";
         }
     }
 </script>
-
 
 </body>
 </html>
