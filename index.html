@@ -23,7 +23,6 @@
 <script>
     const STORAGE_KEY = 'saved_gift_codes';
 
-    // 1. 網頁開啟時，自動讀取上次輸入的內容
     window.onload = function() {
         const savedCodes = localStorage.getItem(STORAGE_KEY);
         if (savedCodes) {
@@ -31,10 +30,10 @@
         }
     };
 
-    function submit() {
-        const text = document.getElementById('codes').value;
+    async function submit() {
+        const textarea = document.getElementById('codes');
+        const text = textarea.value;
         
-        // 2. 每次提交時，自動將內容儲存到 localStorage
         localStorage.setItem(STORAGE_KEY, text);
         
         const lines = text.split('\n').map(s => s.trim()).filter(s => s !== "");
@@ -43,9 +42,21 @@
         const joined = lines.join('@==');
         const url = `http://47.96.230.2:9997/qqyxNew/addDHM?dhm=${encodeURIComponent(joined)}`;
         
-        window.open(url, '_blank');
+        // --- 改用背景發送 ---
+        try {
+            // 使用 no-cors 進行盲發，這樣網頁不會跳轉
+            await fetch(url, { mode: 'no-cors' });
+            
+            // 給使用者一點視覺回饋，因為沒跳轉的話會感覺「沒反應」
+            alert("提交成功！請求已在背景發送。");
+        } catch (error) {
+            // 如果失敗，退而求其次，改用開新視窗
+            console.error("背景發送失敗，改用開視窗模式:", error);
+            window.open(url, '_blank');
+        }
     }
 </script>
+
 
 </body>
 </html>
