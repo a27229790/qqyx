@@ -1,94 +1,93 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>六石禮包碼工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>球球英雄腳本工具站</title>
     <style>
-        /* 全域設定 */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            padding: 15px; 
-            background: #f4f7f9; 
-            display: flex; 
-            justify-content: center; 
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --btn-bg: #ffffff;
+            --btn-text: #121212;
+        }
+
+        body.light-mode {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --btn-bg: #333333;
+            --btn-text: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            text-align: center;
+            padding: 20px;
             margin: 0;
-        }
-        
-        .box { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            width: 100%; 
-            max-width: 450px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            box-sizing: border-box; /* 確保 padding 不會撐破版面 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        h3 { margin-top: 0; color: #333; text-align: center; }
+        h1 { margin-bottom: 10px; font-size: 24px; }
+        p { margin-bottom: 30px; opacity: 0.8; }
 
-        textarea { 
-            width: 100%; 
-            height: 250px; /* 手機上高度拉長一點比較好輸入 */
-            margin: 10px 0; 
-            padding: 12px; 
-            border: 2px solid #ddd; 
-            border-radius: 10px; 
-            box-sizing: border-box; 
-            font-family: monospace; 
-            font-size: 16px; /* 防止 iOS 輸入時自動縮放 */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
         }
 
-        button { 
-            width: 100%; 
-            padding: 18px; /* 加大觸控區域 */
-            background: #28a745; 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-size: 18px; /* 字體放大更好點 */
+        .btn {
+            padding: 15px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: bold;
-            -webkit-tap-highlight-color: transparent; /* 去除點擊時的藍色陰影 */
+            transition: transform 0.1s;
         }
 
-        button:active { background: #218838; }
+        .btn:active { transform: scale(0.98); }
 
-        .footer { font-size: 12px; color: #888; margin-top: 15px; text-align: center; }
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h3>禮包碼保存系統</h3>
-    <textarea id="codes" placeholder="輸入禮包碼，一行一個..." inputmode="latin"></textarea>
-    <button onclick="submit()">提交並更新紀錄</button>
-    <p class="footer">※ 紀錄儲存在瀏覽器中</p>
-</div>
+    <button id="theme-toggle" onclick="toggleTheme()">切換模式</button>
 
-<script>
-    const STORAGE_KEY = 'saved_gift_codes';
+    <h1>球球英雄腳本工具站</h1>
+    <p>簡單、純粹的資源入口</p>
+    
+    <div class="btn-group">
+        <a href="https://4v2dwd4peo.k.topthink.com/@qqyx/shipeideheqiutaozhuang.html" target="_blank" class="btn">適配球球套裝</a>
+        <a href="http://47.96.230.2:5147/qqyx/downloadScript.html" target="_blank" class="btn">腳本下載</a>
+        <a href="https://mega.nz/folder/oJcniTzb#2q8jn1u5yTBOgX-cZ5fDcg" target="_blank" class="btn">免廣告下載</a>
+    </div>
 
-    window.onload = function() {
-        const savedCodes = localStorage.getItem(STORAGE_KEY);
-        if (savedCodes) {
-            document.getElementById('codes').value = savedCodes;
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
         }
-    };
-
-    function submit() {
-        const text = document.getElementById('codes').value;
-        localStorage.setItem(STORAGE_KEY, text);
-        
-        const lines = text.split('\n').map(s => s.trim()).filter(s => s !== "");
-        if (lines.length === 0) return alert("請輸入禮包碼");
-
-        const joined = lines.join('@==');
-        const url = `http://47.96.230.2:9997/qqyxNew/addDHM?dhm=${encodeURIComponent(joined)}`;
-        
-        window.open(url, '_blank');
-    }
-</script>
-
+    </script>
 </body>
 </html>
