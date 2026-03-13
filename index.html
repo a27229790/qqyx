@@ -68,12 +68,13 @@
             padding: 8px 12px;
             cursor: pointer;
             border-radius: 4px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-    <button id="theme-toggle" onclick="toggleTheme()">切換模式</button>
+    <button id="theme-toggle" onclick="toggleTheme()">切換淺色模式</button>
 
     <h1>球球英雄腳本工具站</h1>
     <p>簡單、純粹的資源入口</p>
@@ -87,7 +88,17 @@
 
     <script>
         function toggleTheme() {
-            document.body.classList.toggle('light-mode');
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            
+            body.classList.toggle('light-mode');
+            
+            // 判斷當前是否為 light-mode
+            if (body.classList.contains('light-mode')) {
+                btn.textContent = "切換深色模式";
+            } else {
+                btn.textContent = "切換淺色模式";
+            }
         }
     </script>
 </body>
