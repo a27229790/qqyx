@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>球球英雄腳本工具站</title>
     <style>
+        /* 預設為深色風格 (符合你的需求) */
         :root {
             --bg-color: #121212;
             --text-color: #e0e0e0;
@@ -12,6 +13,7 @@
             --btn-text: #121212;
         }
 
+        /* 淺色模式類別 */
         body.light-mode {
             --bg-color: #ffffff;
             --text-color: #333333;
@@ -22,7 +24,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             text-align: center;
             padding: 20px;
@@ -53,7 +55,7 @@
             border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
-            transition: transform 0.1s;
+            transition: transform 0.1s, background-color 0.3s, color 0.3s;
         }
 
         .btn:active { transform: scale(0.98); }
@@ -69,6 +71,7 @@
             cursor: pointer;
             border-radius: 4px;
             font-size: 14px;
+            transition: all 0.3s;
         }
     </style>
 </head>
@@ -87,19 +90,31 @@
     </div>
 
     <script>
+        const btn = document.getElementById('theme-toggle');
+        const body = document.body;
+
         function toggleTheme() {
-            const body = document.body;
-            const btn = document.getElementById('theme-toggle');
-            
             body.classList.toggle('light-mode');
             
-            // 判斷當前是否為 light-mode
-            if (body.classList.contains('light-mode')) {
-                btn.textContent = "切換深色模式";
-            } else {
-                btn.textContent = "切換淺色模式";
-            }
+            // 儲存設定到瀏覽器
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            
+            // 更新按鈕文字
+            btn.textContent = isLight ? "切換深色模式" : "切換淺色模式";
         }
+
+        // 初始化：頁面載入時檢查設定
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            // 如果有存過設定就用設定，沒有的話就跟隨系統
+            if (savedTheme === 'light' || (!savedTheme && !systemPrefersDark)) {
+                body.classList.add('light-mode');
+                btn.textContent = "切換深色模式";
+            }
+        };
     </script>
 </body>
 </html>
